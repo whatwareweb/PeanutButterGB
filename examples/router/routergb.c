@@ -97,7 +97,7 @@ void read_cart_ram_file(const char *save_file_name, uint8_t **dest, const size_t
 
 	/* Allocate enough memory to hold save file */
 	if ((*dest = malloc(len)) == NULL) {
-		fprintf(stderr, "error: could not load save file\n");
+		perror("error: could not load save file");
 		exit(EXIT_FAILURE);
 	}
 
@@ -122,7 +122,7 @@ void write_cart_ram_file(const char *save_file_name, uint8_t **dest, const size_
 		return;
 
 	if ((f = fopen(save_file_name, "wb")) == NULL) {
-		fprintf(stderr, "error: could not write to save file\n");
+		perror("error: could not write to save file");
 		return;
 	}
 
@@ -304,8 +304,10 @@ int main(int argc, char *argv[]) {
 	}
 
 	/* Copy input ROM file to allocated memory */
-	if ((priv.rom = load_file(rom_file_name)) == NULL){
-		fprintf(stderr, "error: failure loading rom file: %s\n", rom_file_name);
+	if ((priv.rom = load_file(rom_file_name)) == NULL) {
+		char errormsg[256];
+		snprintf(errormsg, sizeof(errormsg), "error: failure loading rom file: %s", rom_file_name);
+		perror(errormsg);
 		ret = EXIT_FAILURE;
 		goto out;
 	}
@@ -322,7 +324,7 @@ int main(int argc, char *argv[]) {
 		save_file_name = malloc(strlen(rom_file_name) + strlen(extension) + 1);
 
 		if(save_file_name == NULL) {
-			fprintf(stderr, "error: could not create space for save file name\n");
+			perror("error: could not create space for save file name");
 			ret = EXIT_FAILURE;
 			goto out;
 		}
