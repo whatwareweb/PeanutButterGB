@@ -1,13 +1,10 @@
-# Peanut-GB
+# PeanutButterGB
 
-Peanut-GB is a single file header Game Boy emulator library based off of [this
-gameboy emulator](https://github.com/gregtour/gameboy). The aim is to make a
-high speed and portable Game Boy (DMG) emulator library that may be used for any
-platform that has a C99 compiler.
-
-This emulator is *very fast*. So much so that it can run at
-[full speed on the Raspberry Pi Pico](https://github.com/deltabeard/RP2040-GB)!
-Check out [BENCHMARK.md](BENCHMARK.md) for benchmarks of Peanut-GB.
+PeanutButterGB is a Gameboy emulator based off of [PeanutGB](https://github.com/deltabeard/Peanut-GB)
+that is specifically designed to run on Wi-Fi Routers. I decided to make this project because why not.
+PeanutButterGB uses the router's USB interface to output sound via ALSA and recieve joystick inputs
+via the Linux USB joystick library. This project has been tested working on OpenWRT, however lots of
+setup is required that will be documented Soon(tm).
 
 Only the original Game Boy (DMG) is supported at this time, but preliminary work
 has been completed to support Game Boy Color
@@ -147,7 +144,7 @@ Boy games.
 These functions are required for audio emulation and output. Peanut-GB does not
 include audio emulation, so an external library must be used. These functions
 must be defined and audio output must be enabled by defining ENABLE_SOUND to 1
-before including peanut_gb.h. 
+before including peanut_gb.h.
 
 #### gb_serial_tx and gb_serial_rx
 
