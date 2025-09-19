@@ -503,7 +503,6 @@ int main(int argc, char *argv[]) {
 							gb.direct.joypad = (jse.value > JS_DEADZONE) ? ~JOYPAD_DOWN : gb.direct.joypad | JOYPAD_DOWN;
 							break;
 					}
-					printf("Axis %d value: %d\n", jse.number, jse.value);
 					break;
         	}
     	}
