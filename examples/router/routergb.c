@@ -20,6 +20,8 @@ void audio_write(uint16_t addr, uint8_t val);
 
 #include "../../peanut_gb.h"
 
+#define AUDIO_BUFFER_SIZE 256
+
 
 static struct minigb_apu_ctx apu;
 
@@ -436,7 +438,7 @@ int main(int argc, char *argv[]) {
     config.playback.channels  = 2;                   // Set to 0 to use the device's native channel count.
     config.sampleRate         = AUDIO_SAMPLE_RATE;   // Set to 0 to use the device's native sample rate.
     config.dataCallback       = audio_data_callback;       // This function will be called when miniaudio needs more data.
-	config.periodSizeInFrames = 256;
+	config.periodSizeInFrames = AUDIO_BUFFER_SIZE;
 
 	ma_device device;
 	if (ma_device_init(NULL, &config, &device) != MA_SUCCESS) {
