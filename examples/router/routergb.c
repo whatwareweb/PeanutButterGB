@@ -18,6 +18,9 @@
 uint8_t audio_read(uint16_t addr);
 void audio_write(uint16_t addr, uint8_t val);
 
+
+#include "network-lcd/netlcd.h"
+
 #include "../../peanut_gb.h"
 
 #define AUDIO_BUFFER_SIZE 256
@@ -529,6 +532,7 @@ int main(int argc, char *argv[]) {
 		SDL_RenderCopy(renderer, texture, NULL, NULL);
 		SDL_RenderPresent(renderer);
 		*/
+
 
 		if(dump_bmp) {
 			if(save_lcd_bmp(&gb, priv.fb) != 0) {
