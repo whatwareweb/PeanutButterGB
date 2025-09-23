@@ -1,5 +1,5 @@
 /*
-    This file was adapted from the SDL project
+	This file was adapted from the SDL project
 */
 
 #ifndef FILEUTILS_H

@@ -42,71 +42,71 @@ typedef int32_t audio_sample_t;
 #define AUDIO_ADDR_COMPENSATION 0xFF10
 
 struct chan_len_ctr {
-    uint8_t load;
-    uint8_t enabled;
-    uint32_t counter;
-    uint32_t inc;
+	uint8_t load;
+	uint8_t enabled;
+	uint32_t counter;
+	uint32_t inc;
 };
 
 struct chan_vol_env {
-    uint8_t step;
-    uint8_t up;
-    uint32_t counter;
-    uint32_t inc;
+	uint8_t step;
+	uint8_t up;
+	uint32_t counter;
+	uint32_t inc;
 };
 
 struct chan_freq_sweep {
-    uint8_t rate;
-    uint8_t shift;
-    uint8_t down;
-    uint16_t freq;
-    uint32_t counter;
-    uint32_t inc;
+	uint8_t rate;
+	uint8_t shift;
+	uint8_t down;
+	uint16_t freq;
+	uint32_t counter;
+	uint32_t inc;
 };
 
 struct chan {
-    uint8_t enabled;
-    uint8_t powered;
-    uint8_t on_left;
-    uint8_t on_right;
+	uint8_t enabled;
+	uint8_t powered;
+	uint8_t on_left;
+	uint8_t on_right;
 
-    uint8_t volume;
-    uint8_t volume_init;
+	uint8_t volume;
+	uint8_t volume_init;
 
-    uint16_t freq;
-    uint32_t freq_counter;
-    uint32_t freq_inc;
+	uint16_t freq;
+	uint32_t freq_counter;
+	uint32_t freq_inc;
 
-    int32_t val;
+	int32_t val;
 
-    struct chan_len_ctr    len;
-    struct chan_vol_env    env;
-    struct chan_freq_sweep sweep;
+	struct chan_len_ctr    len;
+	struct chan_vol_env    env;
+	struct chan_freq_sweep sweep;
 
-    union {
-        struct {
-            uint8_t duty;
-            uint8_t duty_counter;
-        } square;
-        struct {
-            uint16_t lfsr_reg;
-            uint8_t  lfsr_wide;
-            uint8_t  lfsr_div;
-        } noise;
-        struct {
-            uint8_t sample;
-        } wave;
-    };
+	union {
+		struct {
+			uint8_t duty;
+			uint8_t duty_counter;
+		} square;
+		struct {
+			uint16_t lfsr_reg;
+			uint8_t  lfsr_wide;
+			uint8_t  lfsr_div;
+		} noise;
+		struct {
+			uint8_t sample;
+		} wave;
+	};
 };
 
 struct minigb_apu_ctx {
-    struct chan chans[4];
-    int32_t vol_l, vol_r;
+	struct chan chans[4];
+	int32_t vol_l, vol_r;
 
-    /**
-     * Memory holding audio registers between 0xFF10 and 0xFF3F inclusive.
-     */
-    uint8_t audio_mem[AUDIO_MEM_SIZE];
+	/**
+	 * Memory holding audio registers between 0xFF10 and 0xFF3F inclusive.
+	 */
+	uint8_t audio_mem[AUDIO_MEM_SIZE];
 };
 
 /**
@@ -119,7 +119,7 @@ struct minigb_apu_ctx {
  * \param frameCount The number of stereo frames to generate.
  */
 void minigb_apu_audio_callback(struct minigb_apu_ctx *ctx,
-        audio_sample_t *stream, const ma_uint32 frameCount);
+		audio_sample_t *stream, const ma_uint32 frameCount);
 
 /**
  * Read audio register at given address "addr".
@@ -137,7 +137,7 @@ uint8_t minigb_apu_audio_read(struct minigb_apu_ctx *ctx, const uint16_t addr);
  * \param val Value to write to address.
  */
 void minigb_apu_audio_write(struct minigb_apu_ctx *ctx,
-        const uint16_t addr, const uint8_t val);
+		const uint16_t addr, const uint8_t val);
 
 /**
  * Initialise audio driver.
