@@ -1,7 +1,6 @@
 #ifndef NETLCD_H
 #define NETLCD_H
 
-#include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 
@@ -9,6 +8,7 @@
 
 struct lcd_server {
 	struct sockaddr_in servaddr, cliaddr;
+	int listenfd, len;
 };
 
 int init_netlcd(struct lcd_server server);

@@ -28,6 +28,8 @@ void audio_write(uint16_t addr, uint8_t val);
 
 static struct minigb_apu_ctx apu;
 
+static struct lcd_server lcd;
+
 struct priv_t {
 	/* Pointer to allocated memory holding GB file */
 	uint8_t *rom;
@@ -288,7 +290,7 @@ int main(int argc, char *argv[]) {
 	char *save_file_name = NULL;
 	int ret = EXIT_SUCCESS;
 
-	// TODO initialize frontend
+	init_netlcd(lcd);
 
 	switch (argc) {
 		case 2:

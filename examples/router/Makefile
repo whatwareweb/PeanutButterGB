@@ -5,8 +5,8 @@ CFLAGS := -DENABLE_SOUND -DENABLE_SOUND_MINIGB -DMINIGB_APU_AUDIO_FORMAT_S16SYS
 
 OPT := -O2 -Wall -Wextra
 
-SOURCES := routergb.c minigb_apu/minigb_apu.c fileutils/fileutils.c
-OBJECTS := routergb.o minigb_apu/minigb_apu.o fileutils/fileutils.o
+SOURCES := routergb.c minigb_apu/minigb_apu.c fileutils/fileutils.c network-lcd/netlcd.c
+OBJECTS := routergb.o minigb_apu/minigb_apu.o fileutils/fileutils.o network-lcd/netlcd.o
 
 LDLIBS := -lm -latomic
 
