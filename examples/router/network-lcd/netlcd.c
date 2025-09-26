@@ -7,16 +7,16 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-int init_netlcd(struct lcd_server server) {
-	memset(&server.servaddr, 0, sizeof(server.servaddr));
+int init_netlcd(struct lcd_server *server) {
+	memset(&server->servaddr, 0, sizeof(server->servaddr));
 
 	// create udp socket
-	server.listenfd = socket(AF_INET, SOCK_DGRAM, 0);
-	server.servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	server.servaddr.sin_port = htons(PORT);
-	server.servaddr.sin_family = AF_INET;
+	server->listenfd = socket(AF_INET, SOCK_DGRAM, 0);
+	server->servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	server->servaddr.sin_port = htons(PORT);
+	server->servaddr.sin_family = AF_INET;
 
-	if (bind(server.listenfd, (struct sockaddr*)&server.servaddr, sizeof(server.servaddr)) == -1) {
+	if (bind(server->listenfd, (struct sockaddr*)&server->servaddr, sizeof(server->servaddr)) == -1) {
 		perror("error: could not bind to port");
 		return -1;
 	}
@@ -25,16 +25,20 @@ int init_netlcd(struct lcd_server server) {
 
 	printf("info: waiting to recieve handshake from display client\n");
 
-	server.len = sizeof(server.cliaddr);
-	recvfrom(server.listenfd, buffer, sizeof(buffer), 0, (struct sockaddr*)&server.cliaddr, &server.len);
+	server->len = sizeof(server->cliaddr);
+	recvfrom(server->listenfd, buffer, sizeof(buffer), 0, (struct sockaddr*)&server->cliaddr, &server->len);
 
 	if (strcmp(buffer, "PBGB") != 0) {
 		fprintf(stderr, "error: could not initialize server context: handshake invalid");
 	}
 
-	char *ip_str = inet_ntoa(server.cliaddr.sin_addr);
+	char *ip_str = inet_ntoa(server->cliaddr.sin_addr);
 
 	printf("info: handshake recieved, client ip: %s\n", ip_str);
 
 	return 0;
+}
+
+void send_frame_netlcd(struct lcd_server *server, uint16_t fb[144][160]) {
+	sendto(server->listenfd, fb, MAXLINE, 0, (struct sockaddr*)&server->cliaddr, sizeof(server->cliaddr));
 }

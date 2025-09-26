@@ -164,17 +164,17 @@ void gb_error(struct gb_s *gb, const enum gb_error_e gb_err, const uint16_t addr
 		uint32_t rom_addr;
 		rom_addr = (uint32_t)addr * (uint32_t)gb->selected_rom_bank;
 		snprintf(location, sizeof(location),
-			     " (bank %d mode %d, file offset %u)",
-			     gb->selected_rom_bank, gb->cart_mode_select, rom_addr);
+				 " (bank %d mode %d, file offset %u)",
+				 gb->selected_rom_bank, gb->cart_mode_select, rom_addr);
 	}
 
 	instr_byte = __gb_read(gb, addr);
 
 	snprintf(error_msg, sizeof(error_msg),
-		     "Error: %s at 0x%04X%s with instruction %02X.\n"
-		     "Cart RAM saved to recovery.sav\n"
-		     "Exiting.\n",
-	      gb_err_str[gb_err], addr, location, instr_byte);
+			 "Error: %s at 0x%04X%s with instruction %02X.\n"
+			 "Cart RAM saved to recovery.sav\n"
+			 "Exiting.\n",
+		  gb_err_str[gb_err], addr, location, instr_byte);
 
 	fprintf(stderr, "error in emulation:\n %s\n", error_msg);
 
@@ -187,13 +187,13 @@ void gb_error(struct gb_s *gb, const enum gb_error_e gb_err, const uint16_t addr
 /**
  * Draws scanline into framebuffer.
  */
-void lcd_draw_line(struct gb_s *gb, const uint8_t pixels[160], const uint_fast8_t line) {
+void lcd_draw_line(struct gb_s *gb, const uint8_t pixels[LCD_WIDTH], const uint_fast8_t line) {
 	struct priv_t *priv = gb->direct.priv;
 
 	for(unsigned int x = 0; x < LCD_WIDTH; x++) {
 		priv->fb[line][x] = priv->selected_palette
-				    [(pixels[x] & LCD_PALETTE_ALL) >> 4]
-				    [pixels[x] & 3];
+					[(pixels[x] & LCD_PALETTE_ALL) >> 4]
+					[pixels[x] & 3];
 	}
 }
 
@@ -246,19 +246,19 @@ int initialize_get_ticks() {
 }
 
 uint64_t get_ticks_ms() {
-    struct timespec current_time;
-    clock_gettime(CLOCK_MONOTONIC, &current_time);
+	struct timespec current_time;
+	clock_gettime(CLOCK_MONOTONIC, &current_time);
 
-    uint64_t diff_sec = current_time.tv_sec - start_time.tv_sec;
-    uint64_t diff_nsec = current_time.tv_nsec - start_time.tv_nsec;
+	uint64_t diff_sec = current_time.tv_sec - start_time.tv_sec;
+	uint64_t diff_nsec = current_time.tv_nsec - start_time.tv_nsec;
 
-    // Adjust for negative nanosecond difference
-    if (diff_nsec < 0) {
-        diff_sec--;
-        diff_nsec += 1000000000;
-    }
+	// Adjust for negative nanosecond difference
+	if (diff_nsec < 0) {
+		diff_sec--;
+		diff_nsec += 1000000000;
+	}
 
-    return ((diff_sec * 1000) + (diff_nsec / 1000000));
+	return ((diff_sec * 1000) + (diff_nsec / 1000000));
 }
 
 void delay_ms(uint64_t ms) {
@@ -290,7 +290,7 @@ int main(int argc, char *argv[]) {
 	char *save_file_name = NULL;
 	int ret = EXIT_SUCCESS;
 
-	init_netlcd(lcd);
+	init_netlcd(&lcd);
 
 	switch (argc) {
 		case 2:
@@ -439,18 +439,18 @@ int main(int argc, char *argv[]) {
 	printf("%s\n", title_str);
 
 	ma_device_config config = ma_device_config_init(ma_device_type_playback);
-	config.playback.format    = ma_format_s16;       // Set to ma_format_unknown to use the device's native format.
-    config.playback.channels  = 2;                   // Set to 0 to use the device's native channel count.
-    config.sampleRate         = AUDIO_SAMPLE_RATE;   // Set to 0 to use the device's native sample rate.
-    config.dataCallback       = audio_data_callback;       // This function will be called when miniaudio needs more data.
-	config.periodSizeInFrames = AUDIO_BUFFER_SIZE;
+	config.playback.format    = ma_format_s16;				// Set to ma_format_unknown to use the device's native format.
+	config.playback.channels  = 2;							// Set to 0 to use the device's native channel count.
+	config.sampleRate         = AUDIO_SAMPLE_RATE;			// Set to 0 to use the device's native sample rate.
+	config.dataCallback       = audio_data_callback;		// This function will be called when miniaudio needs more data.
+	config.periodSizeInFrames = AUDIO_BUFFER_SIZE;			// set audio buffer to prevent skipping and missed notes
 
 	ma_device device;
 	if (ma_device_init(NULL, &config, &device) != MA_SUCCESS) {
-        fprintf(stderr, "error: failed to initialize audio");
+		fprintf(stderr, "error: failed to initialize audio");
 		ret = EXIT_FAILURE;
 		goto out;
-    }
+	}
 
 	ma_device_start(&device);
 	minigb_apu_audio_init(&apu);
@@ -460,11 +460,21 @@ int main(int argc, char *argv[]) {
 	int js_fd;
 	struct js_event jse;
 	// set up linux joystick 0
-    js_fd = open("/dev/input/js0", O_RDONLY | O_NONBLOCK);
-    if (js_fd < 0) {
-        perror("error: could not open joystick device");
-        return 1;
-    }
+	js_fd = open("/dev/input/js0", O_RDONLY | O_NONBLOCK);
+	if (js_fd < 0) {
+		perror("error: could not open joystick device");
+		return 1;
+	}
+
+
+	// color palette
+	const uint16_t palette[3][4] = {
+		{ 0x7FFF, 0x5294, 0x294A, 0x0000 },
+		{ 0x7FFF, 0x5294, 0x294A, 0x0000 },
+		{ 0x7FFF, 0x5294, 0x294A, 0x0000 }
+	};
+	size_t palette_bytes = 3 * 4 * sizeof(uint16_t);
+	memcpy(priv.selected_palette, palette, palette_bytes);
 
 
 	/* Main loop */
@@ -509,10 +519,8 @@ int main(int argc, char *argv[]) {
 							break;
 					}
 					break;
-        	}
-    	}
-
-		// All SDL_PollEvent and input handling has been removed.
+			}
+		}
 
 		/* Execute CPU cycles until the screen has to be redrawn. */
 		gb_run_frame(&gb);
@@ -534,6 +542,7 @@ int main(int argc, char *argv[]) {
 		SDL_RenderCopy(renderer, texture, NULL, NULL);
 		SDL_RenderPresent(renderer);
 		*/
+		send_frame_netlcd(&lcd, priv.fb);
 
 
 		if(dump_bmp) {
