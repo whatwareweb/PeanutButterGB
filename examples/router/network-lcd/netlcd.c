@@ -32,5 +32,9 @@ int init_netlcd(struct lcd_server server) {
 		fprintf(stderr, "error: could not initialize server context: handshake invalid");
 	}
 
+	char *ip_str = inet_ntoa(server.cliaddr.sin_addr);
+
+	printf("info: handshake recieved, client ip: %s\n", ip_str);
+
 	return 0;
 }
