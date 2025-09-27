@@ -494,28 +494,28 @@ int main(int argc, char *argv[]) {
 				case JS_EVENT_BUTTON:
 					switch (jse.number) {
 						case A_BTN:
-							gb.direct.joypad = (jse.value) ? ~JOYPAD_A : gb.direct.joypad | JOYPAD_A;
+							gb.direct.joypad = (jse.value) ? gb.direct.joypad & ~JOYPAD_A : gb.direct.joypad | JOYPAD_A;
 							break;
 						case B_BTN:
-							gb.direct.joypad = (jse.value) ? ~JOYPAD_B : gb.direct.joypad | JOYPAD_B;
+							gb.direct.joypad = (jse.value) ? gb.direct.joypad & ~JOYPAD_B : gb.direct.joypad | JOYPAD_B;
 							break;
 						case SEL_BTN:
-							gb.direct.joypad = (jse.value) ? ~JOYPAD_SELECT : gb.direct.joypad | JOYPAD_SELECT;
+							gb.direct.joypad = (jse.value) ? gb.direct.joypad & ~JOYPAD_SELECT : gb.direct.joypad | JOYPAD_SELECT;
 							break;
 						case STA_BTN:
-							gb.direct.joypad = (jse.value) ? ~JOYPAD_START : gb.direct.joypad | JOYPAD_START;
+							gb.direct.joypad = (jse.value) ? gb.direct.joypad & ~JOYPAD_START : gb.direct.joypad | JOYPAD_START;
 							break;
 					}
 					break;
 				case JS_EVENT_AXIS:
 					switch (jse.number) {
 						case 0:
-							gb.direct.joypad = (jse.value < -JS_DEADZONE) ? ~JOYPAD_LEFT : gb.direct.joypad | JOYPAD_LEFT;
-							gb.direct.joypad = (jse.value > JS_DEADZONE) ? ~JOYPAD_RIGHT : gb.direct.joypad | JOYPAD_RIGHT;
+							gb.direct.joypad = (jse.value < -JS_DEADZONE) ? gb.direct.joypad & ~JOYPAD_LEFT : gb.direct.joypad | JOYPAD_LEFT;
+							gb.direct.joypad = (jse.value > JS_DEADZONE) ? gb.direct.joypad & ~JOYPAD_RIGHT : gb.direct.joypad | JOYPAD_RIGHT;
 							break;
 						case 1:
-							gb.direct.joypad = (jse.value < -JS_DEADZONE) ? ~JOYPAD_UP : gb.direct.joypad | JOYPAD_UP;
-							gb.direct.joypad = (jse.value > JS_DEADZONE) ? ~JOYPAD_DOWN : gb.direct.joypad | JOYPAD_DOWN;
+							gb.direct.joypad = (jse.value < -JS_DEADZONE) ? gb.direct.joypad & ~JOYPAD_UP : gb.direct.joypad | JOYPAD_UP;
+							gb.direct.joypad = (jse.value > JS_DEADZONE) ? gb.direct.joypad & ~JOYPAD_DOWN : gb.direct.joypad | JOYPAD_DOWN;
 							break;
 					}
 					break;
