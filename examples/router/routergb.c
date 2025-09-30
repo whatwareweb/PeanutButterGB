@@ -535,13 +535,6 @@ int main(int argc, char *argv[]) {
 
 		fast_mode_timer = fast_mode;
 
-		/* TODO - reimplement this as non-SDL
-		// Copy frame buffer to SDL screen.
-		SDL_UpdateTexture(texture, NULL, &priv.fb, LCD_WIDTH * sizeof(uint16_t));
-		SDL_RenderClear(renderer);
-		SDL_RenderCopy(renderer, texture, NULL, NULL);
-		SDL_RenderPresent(renderer);
-		*/
 		send_frame_netlcd(&lcd, priv.fb);
 
 
