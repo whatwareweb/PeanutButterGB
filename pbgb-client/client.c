@@ -11,9 +11,9 @@
 #define PORT 5000
 #define MAXLINE 1000
 
-#define SCREEN_WIDTH 160
-#define SCREEN_HEIGHT 144
-#define PIXEL_COUNT (SCREEN_WIDTH * SCREEN_HEIGHT)
+#define LCD_WIDTH 160
+#define LCD_HEIGHT 144
+#define PIXEL_COUNT (LCD_WIDTH * LCD_HEIGHT)
 
 
 int save_lcd_bmp(uint16_t fb[144][160]) {
@@ -23,7 +23,7 @@ int save_lcd_bmp(uint16_t fb[144][160]) {
 	FILE *f;
 	int ret = -1;
 
-	snprintf(file_name, 36, "%.16s_%010ld.bmp", "test", file_num);
+	snprintf(file_name, 36, "%.16s_%i.bmp", "test", file_num);
 
 	f = fopen(file_name, "wb");
 
@@ -71,7 +71,8 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-	window = SDL_CreateWindow("PBGB Client", SCREEN_WIDTH * 4, SCREEN_HEIGHT * 4, 0);
+
+	window = SDL_CreateWindow("PBGB Client", LCD_WIDTH * 4, LCD_HEIGHT * 4, 0);
 
     if (window == NULL) {
         fprintf(stderr, "sdl error creating window: %s\n", SDL_GetError());
@@ -91,7 +92,7 @@ int main(int argc, char *argv[]) {
         renderer,
         SDL_PIXELFORMAT_XRGB1555,
         SDL_TEXTUREACCESS_STREAMING,
-        SCREEN_WIDTH, SCREEN_HEIGHT
+        LCD_WIDTH, LCD_HEIGHT
     );
 
     if (texture == NULL) {
@@ -101,6 +102,10 @@ int main(int argc, char *argv[]) {
         SDL_Quit();
         return 1;
     }
+
+	SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
+
+	SDL_SetRenderLogicalPresentation(renderer, LCD_WIDTH, LCD_HEIGHT, SDL_LOGICAL_PRESENTATION_INTEGER_SCALE);
 
 	char buffer[PIXEL_COUNT*2]; // uint16_t pixel values is double the size of char
 	char *message = "PBGB";
@@ -147,7 +152,7 @@ int main(int argc, char *argv[]) {
             texture,
             NULL, // NULL means update the entire texture
             &buffer, // Pointer to the raw pixel data
-            SCREEN_WIDTH * 2 // Pitch: bytes per row. 160 pixels * 2 bytes/pixel = 320 bytes
+            LCD_WIDTH * 2 // Pitch: bytes per row. 160 pixels * 2 bytes/pixel = 320 bytes
         )) {
             fprintf(stderr, "SDL_UpdateTexture failed: %s\n", SDL_GetError());
             continue;

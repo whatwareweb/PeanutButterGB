@@ -23,7 +23,7 @@ void audio_write(uint16_t addr, uint8_t val);
 
 #include "../../peanut_gb.h"
 
-#define AUDIO_BUFFER_SIZE 256
+#define AUDIO_BUFFER_SIZE 512
 
 
 static struct minigb_apu_ctx apu;
