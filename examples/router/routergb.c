@@ -21,10 +21,10 @@ void audio_write(uint16_t addr, uint8_t val);
 
 #include "network-lcd/netlcd.h"
 
+#define PEANUT_FULL_GBC_SUPPORT 1
 #include "../../peanut_gb.h"
 
 #define AUDIO_BUFFER_SIZE 512
-
 
 static struct minigb_apu_ctx apu;
 
@@ -187,13 +187,23 @@ void gb_error(struct gb_s *gb, const enum gb_error_e gb_err, const uint16_t addr
 /**
  * Draws scanline into framebuffer.
  */
-void lcd_draw_line(struct gb_s *gb, const uint8_t pixels[LCD_WIDTH], const uint_fast8_t line) {
+void lcd_draw_line(struct gb_s *gb, const uint8_t pixels[160], const uint_least8_t line) {
 	struct priv_t *priv = gb->direct.priv;
-
-	for(unsigned int x = 0; x < LCD_WIDTH; x++) {
-		priv->fb[line][x] = priv->selected_palette
-					[(pixels[x] & LCD_PALETTE_ALL) >> 4]
-					[pixels[x] & 3];
+	if (gb->cgb.cgbMode)
+	{
+		for (unsigned int x = 0; x < LCD_WIDTH; x++)
+		{
+			priv->fb[line][x] = gb->cgb.fixPalette[pixels[x]];
+		}
+	}
+	else
+	{
+		for(unsigned int x = 0; x < LCD_WIDTH; x++)
+		{
+			priv->fb[line][x] = priv->selected_palette
+				    [(pixels[x] & LCD_PALETTE_ALL) >> 4]
+				    [pixels[x] & 3];
+		}
 	}
 }
 
@@ -387,11 +397,8 @@ int main(int argc, char *argv[]) {
 
 
 	/* Load Savefile */
-	if(gb_get_save_size_s(&gb, &priv.save_size) < 0) {
-		fprintf(stderr, "error: unable to get save size \n");
-		ret = EXIT_FAILURE;
-		goto out;
-	}
+	read_cart_ram_file(save_file_name, &priv.cart_ram, gb_get_save_size(&gb));
+
 
 	/* Only attempt to load a save file if the ROM actually supports saves */
 	if(priv.save_size > 0)
@@ -494,28 +501,28 @@ int main(int argc, char *argv[]) {
 				case JS_EVENT_BUTTON:
 					switch (jse.number) {
 						case A_BTN:
-							gb.direct.joypad = (jse.value) ? gb.direct.joypad & ~JOYPAD_A : gb.direct.joypad | JOYPAD_A;
+							gb.direct.joypad_bits.a = !jse.value;
 							break;
 						case B_BTN:
-							gb.direct.joypad = (jse.value) ? gb.direct.joypad & ~JOYPAD_B : gb.direct.joypad | JOYPAD_B;
+							gb.direct.joypad_bits.b = !jse.value;
 							break;
 						case SEL_BTN:
-							gb.direct.joypad = (jse.value) ? gb.direct.joypad & ~JOYPAD_SELECT : gb.direct.joypad | JOYPAD_SELECT;
+							gb.direct.joypad_bits.select = !jse.value;
 							break;
 						case STA_BTN:
-							gb.direct.joypad = (jse.value) ? gb.direct.joypad & ~JOYPAD_START : gb.direct.joypad | JOYPAD_START;
+							gb.direct.joypad_bits.start = !jse.value;
 							break;
 					}
 					break;
 				case JS_EVENT_AXIS:
 					switch (jse.number) {
 						case 0:
-							gb.direct.joypad = (jse.value < -JS_DEADZONE) ? gb.direct.joypad & ~JOYPAD_LEFT : gb.direct.joypad | JOYPAD_LEFT;
-							gb.direct.joypad = (jse.value > JS_DEADZONE) ? gb.direct.joypad & ~JOYPAD_RIGHT : gb.direct.joypad | JOYPAD_RIGHT;
+							gb.direct.joypad_bits.left = (jse.value < -JS_DEADZONE) ? 0 : 1;
+							gb.direct.joypad_bits.right = (jse.value < -JS_DEADZONE) ? 0 : 1;
 							break;
 						case 1:
-							gb.direct.joypad = (jse.value < -JS_DEADZONE) ? gb.direct.joypad & ~JOYPAD_UP : gb.direct.joypad | JOYPAD_UP;
-							gb.direct.joypad = (jse.value > JS_DEADZONE) ? gb.direct.joypad & ~JOYPAD_DOWN : gb.direct.joypad | JOYPAD_DOWN;
+							gb.direct.joypad_bits.up = (jse.value < -JS_DEADZONE) ? 0 : 1;
+							gb.direct.joypad_bits.down = (jse.value < -JS_DEADZONE) ? 0 : 1;
 							break;
 					}
 					break;
