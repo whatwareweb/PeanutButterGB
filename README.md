@@ -6,9 +6,7 @@ PeanutButterGB uses the router's USB interface to output sound via ALSA and reci
 via the Linux USB joystick library. This project has been tested working on OpenWRT, however lots of
 setup is required that will be documented Soon(tm).
 
-Only the original Game Boy (DMG) is supported at this time, but preliminary work
-has been completed to support Game Boy Color
-(see https://github.com/deltabeard/Peanut-GB/issues/50).
+This emulator supports Game Boy (DMG) and Game Boy Color (CGB) games.
 
 This emulator is a work in progress and can be inaccurate (although it does pass
 Blargg's CPU instructions and instruction timing tests). As such, some games may
